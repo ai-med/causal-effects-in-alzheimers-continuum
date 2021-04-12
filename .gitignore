@@ -139,3 +139,6 @@ Temporary Items
 !.vscode/extensions.json
 
 .cached-*.pkl
+data/**
+!data/adni-data-template.csv
+!data/ukb-data-template.csv

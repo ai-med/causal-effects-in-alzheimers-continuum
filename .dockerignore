@@ -1,0 +1,7 @@
+**/.idea
+**/.vscode
+**/.git
+**/__pycache__
+**/build
+**/data
+**/dist
