@@ -1,6 +1,6 @@
 # Estimation of Causal Effects in the Presence of Unobserved Confounding in the Alzheimer's Continuum
 
-![Paper](https://img.shields.io/badge/arXiv-2006.13135-b31b1b)
+[![Paper](https://img.shields.io/badge/arXiv-2006.13135-b31b1b)](https://arxiv.org/abs/2006.13135)
 
 This repository contains the code to the paper "Estimation of Causal Effects in the Presence of Unobserved Confounding in the Alzheimer's Continuum."
 If you are using this code, please cite:
