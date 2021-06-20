@@ -9,8 +9,10 @@ If you are using this code, please cite:
 @inproceedings(Poelsterl2021-causal-effects-in-ad,
   title     = {{Estimation of Causal Effects in the Presence of Unobserved Confounding in the Alzheimer's Continuum}},
   author    = {P{\"{o}}lsterl, Sebastian and Wachinger, Christian},
-  booktitle = {IPMI: International Conference on Information Processing in Medical Imaging},
+  booktitle = {Information Processing in Medical Imaging},
   year      = {2021},
+  pages     = {45--57},
+  doi       = {10.1007/978-3-030-78191-0_4},
   url       = {https://arxiv.org/abs/2006.13135},
 }
 ```
