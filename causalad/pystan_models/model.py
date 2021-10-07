@@ -545,7 +545,11 @@ class BPMF(Model):
         pbar = tqdm(total=n_eval, disable=silent)
         for j in range(n_eval):
             V = v_rv.rvs(size=self.n_features_)
+            if V.ndim == 1:
+                V = V[:, np.newaxis]
             U = u_rv.rvs(size=self.n_samples_)
+            if U.ndim == 1:
+                U = U[:, np.newaxis]
             alpha_sample = np.column_stack([
                 a_rv.rvs()
                 for a_rv in alpha_rv
