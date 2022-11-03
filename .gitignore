@@ -138,7 +138,11 @@ Temporary Items
 !.vscode/launch.json
 !.vscode/extensions.json
 
+/causalad/pystan_models/stan_files/*.hpp
+/causalad/pystan_models/stan_files/_*
+
 .cached-*.pkl
 data/**
+/outputs*
 !data/adni-data-template.csv
 !data/ukb-data-template.csv

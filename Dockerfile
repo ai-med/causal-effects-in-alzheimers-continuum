@@ -1,31 +1,52 @@
-FROM continuumio/miniconda3:4.9.2
+FROM debian:bullseye-slim
 
-COPY requirements.yaml /
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
-RUN set -xe \
-    && conda install -q -y tini=0.18.0 \
-    && conda env create -n jupyter -q --file /requirements.yaml \
-    && conda clean --all -f -y \
-    && rm -f /requirements.yaml
-
-RUN set -xe \
-    && buildDeps="fonts-liberation2" \
-    && apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y $buildDeps --no-install-recommends \
+RUN apt-get update -q && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -q -y --no-install-recommends \
+        bzip2 \
+        ca-certificates \
+        fonts-liberation2 \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender1 \
+        openssh-client \
+        procps \
+        wget \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /notebooks/data && echo 'backend: Agg' > /notebooks/matplotlibrc
-COPY adni*.ipynb run-synthetic-ukb.sh /notebooks/
-COPY causalad /notebooks/causalad
-WORKDIR /notebooks
+RUN wget "https://github.com/conda-forge/miniforge/releases/download/4.12.0-2/Mambaforge-4.12.0-2-Linux-x86_64.sh" \
+    && echo "8cb16ef82fe18d466850abb873c7966090b0fbdcf1e80842038e0b4e6d8f0b66  ./Mambaforge-4.12.0-2-Linux-x86_64.sh" > shasum \
+    && sha256sum --check --status shasum \
+    && mkdir -p /opt \
+    && bash Mambaforge-4.12.0-2-Linux-x86_64.sh -b -p /opt/conda \
+    && rm "Mambaforge-4.12.0-2-Linux-x86_64.sh" shasum \
+    && /opt/conda/bin/mamba clean --all -f -y \
+    && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
+    && ln -s /opt/conda/etc/profile.d/mamba.sh /etc/profile.d/mamba.sh \
+    && echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc \
+    && echo ". /opt/conda/etc/profile.d/mamba.sh" >> ~/.bashrc \
+    && echo "conda activate base" >> ~/.bashrc
 
-RUN conda run --no-capture-output -n jupyter \
-    python -c 'from causalad.pystan_models.model import compile_stan_models; compile_stan_models()'
+COPY requirements.yaml /requirements.yaml
+RUN /opt/conda/bin/mamba env create -n jupyter --file /requirements.yaml \
+    && /opt/conda/bin/mamba clean --all -f -y \
+    && /opt/conda/envs/jupyter/bin/pip install --no-cache neurocombat==0.2.12 \
+    && mkdir -p /workspace/data /workspace/outputs ~/.config/matplotlib \
+    && echo 'backend: Agg' > ~/.config/matplotlib/matplotlibrc \
+    && rm /requirements.yaml
 
-EXPOSE 8888
-VOLUME ["/notebooks/data"]
+COPY . /build
+SHELL ["/bin/bash", "-c"]
+RUN cd /build \
+    && . /opt/conda/bin/activate jupyter \
+    && python setup.py bdist_wheel \
+    && pip install --no-index -f dist/ causalad \
+    && mv adni-experiments.sh ukb-experiments.sh /workspace/ \
+    && rm -fr /build
 
-# Configure container startup
-ENTRYPOINT ["tini", "-g", "--"]
-# Run juypter in a conda environment
-CMD ["conda", "run", "--no-capture-output", "-n", "jupyter", "jupyter", "notebook", "--notebook-dir=/notebooks", "--ip='*'", "--port=8888", "--no-browser", "--allow-root"]
+WORKDIR /workspace
+
+VOLUME ["/workspace/data", "/workspace/outputs"]

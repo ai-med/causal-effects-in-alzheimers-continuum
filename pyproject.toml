@@ -1,0 +1,8 @@
+[build-system]
+requires = [
+  "Cython==0.29.24",
+  "numpy==1.14.6; python_version=='3.7' and platform_system!='AIX'",
+  "pystan==2.19.1.1",
+  "setuptools",
+]
+build-backend = "setuptools.build_meta"
