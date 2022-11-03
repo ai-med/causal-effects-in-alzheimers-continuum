@@ -12,12 +12,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Causal-AD. If not, see <https://www.gnu.org/licenses/>.
-// Linear Model with Normal Errors
+// Binomial Linear Model with logit link function
 data {
   // number of observations
   int<lower=1> N;
   // response
-  vector[N] y;
+  int<lower=0,upper=1> y[N];
   // number of columns in the design matrix X
   int<lower=1> K;
   // design matrix X
@@ -28,36 +28,40 @@ data {
   real<lower=0> scale_beta;
   // keep responses
   int<lower=0> N_tilde;
-  vector[N_tilde] y_tilde;
+  int<lower=0,upper=1> y_tilde[N_tilde];
   matrix[N_tilde, K] X_tilde;
+  int<lower=0,upper=1> do_simulate;
 }
 parameters {
   // regression coefficient vector
   real alpha;
   vector[K] beta;
-  real<lower=0> sigma;
 }
 transformed parameters {
   vector[N] mu;
   vector[N_tilde] mu_tilde;
 
   mu = alpha + X * beta;
-  mu_tilde = alpha + X_tilde * beta;
+  if (do_simulate) {
+    mu_tilde = alpha + X_tilde * beta;
+  }
 }
 model {
   // priors
   alpha ~ normal(0., scale_alpha);
   beta ~ normal(0., scale_beta);
   // likelihood
-  y ~ normal(mu, sigma);
+  y ~ bernoulli_logit(mu);
 }
 generated quantities {
-  // simulate data from the posterior
-  vector[N_tilde] y_rep;
-  // log-likelihood posterior
-  vector[N_tilde] log_lik;
-  for (i in 1:num_elements(y_rep)) {
-    y_rep[i] = normal_rng(mu_tilde[i], sigma);
-    log_lik[i] = normal_lpdf(y_tilde[i] | mu_tilde[i], sigma);
+  if (do_simulate) {
+    // simulate data from the posterior
+    int y_rep[N_tilde];
+    // log-likelihood posterior
+    vector[N_tilde] log_lik;
+    for (i in 1:num_elements(y_rep)) {
+      y_rep[i] = bernoulli_logit_rng(mu_tilde[i]);
+      log_lik[i] = bernoulli_logit_lpmf(y_tilde[i] | mu_tilde[i]);
+    }
   }
 }

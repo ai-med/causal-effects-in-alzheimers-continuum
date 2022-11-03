@@ -1,0 +1,5 @@
+include causalad/adni/notebooks/*.ipynb
+include causalad/ukb/notebooks/*.ipynb
+include causalad/pystan_models/stan_files/*.stan
+
+exclude causalad/pystan_models/stan_files/_*.cpp
