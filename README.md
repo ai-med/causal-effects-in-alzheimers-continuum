@@ -24,7 +24,7 @@ It is recommended to run the code via [Docker](https://docs.docker.com/install/)
 If you want to use the code for development, you can use [conda](https://conda.io/miniconda.html)
 to create an environment with all dependencies from `requirements.yaml`.
 
-## Building the Image
+## Building the Docker Image
 
 Pre-built packages are provided, but you can also build the docker image yourself:
 
@@ -85,7 +85,7 @@ the data and are familiar with the data portals of ADNI and UK Biobank.
 docker run -it --rm \
 -v $(pwd)/data:/workspace/data \
 -v $(pwd)/outputs:/workspace/outputs \
-adj \
+ghcr.io/ai-med/causal-effects-in-alzheimers-continuum:v0.2.0 \
 ./adni-experiments.sh
 ```
 3. Upon completion, the main results will be available in the `outputs/adni/results` folder.
@@ -122,7 +122,7 @@ adj \
 docker run -it --rm \
 -v $(pwd)/data:/workspace/data \
 -v $(pwd)/outputs:/workspace/outputs \
-adj \
+ghcr.io/ai-med/causal-effects-in-alzheimers-continuum:v0.2.0 \
 ./ukb-experiments.sh
 ```
 

@@ -50,3 +50,7 @@ RUN cd /build \
 WORKDIR /workspace
 
 VOLUME ["/workspace/data", "/workspace/outputs"]
+
+LABEL org.opencontainers.image.source=https://github.com/ai-med/causal-effects-in-alzheimers-continuum
+LABEL org.opencontainers.image.authors="Sebastian Pölsterl"
+LABEL org.opencontainers.image.description="Code for the paper Identification of causal effects of neuroanatomy on cognitive decline requires modeling unobserved confounders"
